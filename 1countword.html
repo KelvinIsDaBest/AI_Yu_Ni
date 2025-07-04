@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课文理解</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #a259c6 0%, #6d3a8c 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    .yam-container {
+      background: #e6d0f7;
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(108, 52, 131, 0.2);
+      padding: 40px 20px 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 4px solid #a259c6;
+      position: relative;
+      max-width: 420px;
+      width: 95vw;
+    }
+    .yam-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      background: radial-gradient(circle at 60% 40%, #b57edc 60%, #a259c6 100%);
+      border-radius: 50% 60% 55% 65% / 60% 55% 65% 50%;
+      box-shadow: 0 4px 16px #a259c6aa;
+      position: relative;
+    }
+    .yam-icon::after {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 30px;
+      width: 18px;
+      height: 18px;
+      background: #fff3;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+    h2 {
+      color: #6d3a8c;
+      margin-bottom: 18px;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #a259c655;
+      text-align: center;
+    }
+    .paragraph-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 14px;
+      color: #6d3a8c;
+      font-size: 1.15rem;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px #a259c622;
+      min-width: 220px;
+      max-width: 340px;
+      text-align: left;
+      word-break: break-all;
+      display: none;
+    }
+    .question-box {
+      margin-bottom: 12px;
+      color: #6d3a8c;
+      font-size: 1.1rem;
+      text-align: center;
+      display: none;
+    }
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .input-row input[type="number"] {
+      width: 70px;
+      height: 40px;
+      font-size: 1.3rem;
+      text-align: center;
+      border: 2px solid #a259c6;
+      border-radius: 10px;
+      background: #fff;
+      color: #6d3a8c;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #a259c622;
+    }
+    .input-row input[type="number"]:focus {
+      border: 2px solid #6d3a8c;
+      box-shadow: 0 0 0 2px #a259c655;
+    }
+    .error-message {
+      color: #c0392b;
+      font-size: 1rem;
+      min-height: 24px;
+      margin-top: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .timer {
+      color: #a259c6;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: none;
+    }
+    .btn {
+      background: linear-gradient(90deg, #a259c6 60%, #b57edc 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px #a259c655;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn:active {
+      background: #6d3a8c;
+    }
+    @media (max-width: 600px) {
+      .yam-container {
+        padding: 18px 2vw 18px 2vw;
+        max-width: 98vw;
+      }
+      .paragraph-box {
+        font-size: 1rem;
+        padding: 12px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="yam-container">
+    <div class="yam-icon"></div>
+    <h2>课文理解</h2>
+    <div class="paragraph-box" id="paragraphBox"></div>
+    <button class="btn" id="finishReadingBtn">完成阅读</button>
+    <div class="timer" id="timer"></div>
+    <div class="question-box" id="questionBox"></div>
+    <form id="answerForm" autocomplete="off" onsubmit="return false;">
+      <div class="input-row" id="inputRow">
+        <input type="number" id="userAnswer" min="0" inputmode="numeric" />
+        <button class="btn" id="submitBtn" type="submit">提交</button>
+      </div>
+      <div class="error-message" id="errorMsg"></div>
+    </form>
+  </div>
+  <script>
+    // Define paragraphs, word to count, and answers
+    const challenges = [
+      {
+        paragraph: `从前，有一个遥远的山谷，谷中住着一群热爱种植的芋民。他们的生活围绕着一种作物展开——芋头。芋民们早晨吃芋粥，中午啃烤芋，晚上围着芋火锅讲故事。他们最骄傲的是传说中诞生于“万芋之源”的芋神，守护着这片丰收的土地。有一天，一个外乡少年误入芋谷。他在溪边看到一座闪着光的芋雕塑，随手摸了摸，那芋雕忽然震动起来，仿佛唤醒了沉睡千年的芋魂。刹那间，天降芋雨，无数紫色的芋花从空中飘落，落地生根。“快躲进芋庙！”一个芋民大喊。少年跟着他们钻进一座用上百颗特大芋头垒砌而成的神庙，里面供着一尊巨大的黄金芋像，芋香扑鼻。村长是个头戴芋叶帽、胡子像老芋藤一样纠缠的人。他郑重其事地告诉少年：“你触动了芋脉，必须完成芋试——用66种方式烹饪芋头，才能离开。”少年苦笑：“我平常连泡面都不会煮，怎么煮芋？”村长点头：“所以你得拜芋厨为师。他能用芋造汤、芋酿酒，甚至用芋雕刻。”在接下来的日子里，少年学习如何煎芋、炖芋、炸芋、蒸芋、烘芋，还有如何将芋汁染布、用芋粉写字、甚至用芋叶造纸。最难的一道菜叫“空中三转芋卷”，需把热腾腾的芋泥抛到半空三圈，接住后再裹芋皮。第66天，他终于完成第66道菜——“芋影幻汤”，传说只有真心热爱芋之人才能煮成。整个芋谷沉浸在紫雾中，每个人看见的芋都变成自己心中最想要的模样。“你通过了芋试。”村长说，“现在，你是芋国的朋友。” 他离开芋谷时，背包里装着村民送的77种芋制纪念品。有芋糖、芋笔、芋雕戒指，甚至还有一罐“芋神赐福香”。从此，每当他想念那片土地，只要煮上一锅芋汤，耳边便会响起村民的笑声与风中飘散的芋香。`,
+        word: '芋',
+        answer: 54
+      },
+      {
+        paragraph: `有人说，人生就像一条长长的泥路，走得快了，溅一身泥；走得慢了，被泥裹住脚步，寸步难行。阿平就是走在这条泥路上的旅人。小时候，他最喜欢在雨天跑到后山，那里有一大片温软的泥地。他赤脚踩在泥中，每一步都吱呀作响，像有生命的低语。他会把泥涂满脸，当成战士的伪装；也会用泥做小碗、小狗、小人偶，摆在石头上晒干，然后再一脚踩碎，重新开始。村里人笑他是“泥娃子”。他不介意，因为他觉得泥是自由的。它不在意自己脏不脏，被人踩也不生气，被风吹干了还能变砖，被雨打湿了又变回温柔的泥。长大后，阿平离开村庄，来到城市。他穿上皮鞋，再也没有踩过泥。可有时候，他梦里还在追逐着那片熟悉的泥地。他常常在办公桌下脱掉鞋袜，想象脚下是温热的泥，而不是冷冰冰的地砖。某天，他回到村庄，想找找童年的那片泥地，却发现它已经被水泥地铺满了。他蹲下来，手指划过地缝中残留的一点点湿润，“这里原来是泥的世界。”村中有个孩子，叫小树，总是孤单地坐在屋檐下画画。阿平走过去问：“你在画什么？”小树抬起头说：“我画一片泥田，那里有很多很多的故事。”“你也喜欢泥？”阿平笑了。“嗯，妈妈说我像泥，谁都不喜欢碰。”小树低头。那天，阿平带他走到村边还未开发的一角，挖出一大块潮湿的泥，他们一起捏起了泥马、泥鱼、泥狐狸。小树的脸第一次被泥抹脏，但却笑得像阳光落在田埂上。阿平决定留下来。他找村长谈了一块空地，搭了个“泥工坊”。村里孩子们一个个跑来学用泥捏杯、做碗、印花。他告诉他们：“你们可以用泥说话，讲你们自己的故事。”日子一天天过去，泥地变成了游乐场，变成了小剧场，变成了四季都能记录童心的日记本。每个孩子都在泥里留下笑声和脚印。有人画泥画，有人演泥戏，有人写“泥信”，藏在小罐里，埋在地底等来年发芽。有记者来采访，说：“你用泥改变了这群孩子的世界。”阿平只是摇头：“是泥拯救了我，我只是走回了我该走的那条泥路。”他相信，泥并不只是脏，它是根，是生命的开始。所有花，所有草，所有树，甚至人，都是从泥里站起来的。每当下雨，孩子们仍旧跑到泥地里跳舞，像一群从泥中长出来的歌者。他们踩着泥，拉着泥，在泥的世界里变得自由、欢笑、真实。于是这条“泥路”，便再也不是孤独一人走的路。`,
+        word: '泥',
+        answer: 44
+      }
+    ];
+    // Randomly select a challenge
+    const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+    const paragraphBox = document.getElementById('paragraphBox');
+    const finishReadingBtn = document.getElementById('finishReadingBtn');
+    const questionBox = document.getElementById('questionBox');
+    const inputRow = document.getElementById('inputRow');
+    const userAnswer = document.getElementById('userAnswer');
+    const errorMsg = document.getElementById('errorMsg');
+    const timer = document.getElementById('timer');
+    const submitBtn = document.getElementById('submitBtn');
+    let timeLeft = 30;
+    let timerInterval = null;
+    let answered = false;
+
+    // Show paragraph only, hide question and input
+    paragraphBox.innerHTML = challenge.paragraph.replace(/\n/g, '<br>');
+    paragraphBox.style.display = 'block';
+    questionBox.style.display = 'none';
+    inputRow.style.display = 'none';
+    timer.style.display = 'none';
+
+    finishReadingBtn.addEventListener('click', () => {
+      finishReadingBtn.style.display = 'none';
+      questionBox.textContent = `请问文中"${challenge.word}"一共出现了多少次？`;
+      questionBox.style.display = 'block';
+      inputRow.style.display = 'flex';
+      timer.style.display = 'block';
+      userAnswer.value = '';
+      userAnswer.focus();
+      errorMsg.textContent = '';
+      startTimer();
+    });
+
+    function startTimer() {
+      timeLeft = 30;
+      timer.textContent = `剩余时间：${timeLeft} 秒`;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timer.textContent = `剩余时间：${timeLeft} 秒`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timer.textContent = '时间到！';
+          userAnswer.disabled = true;
+          submitBtn.disabled = true;
+          errorMsg.textContent = '很遗憾，时间已到。请刷新页面重试。';
+        }
+      }, 1000);
+    }
+
+    // Form submission
+    document.getElementById('answerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (answered || timeLeft <= 0) return;
+      const val = parseInt(userAnswer.value, 10);
+      if (isNaN(val)) {
+        errorMsg.textContent = '请输入数字';
+        return;
+      }
+      // Use the predefined answer for validation
+      if (val === challenge.answer) {
+        errorMsg.textContent = '';
+        answered = true;
+        clearInterval(timerInterval);
+        timer.textContent = '答对了！';
+        userAnswer.disabled = true;
+        submitBtn.disabled = true;
+        // Navigate to the next page after a short delay
+        setTimeout(() => {
+          window.location.href = '2bibleverse.html';
+        }, 1000);
+      } else {
+        errorMsg.textContent = '答案不正确，请重新输入。';
+        userAnswer.value = '';
+        userAnswer.focus();
+      }
+    });
+  </script>
+</body>
+</html>

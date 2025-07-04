@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>不一样的圣经</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #a259c6 0%, #6d3a8c 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    .yam-container {
+      background: #e6d0f7;
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(108, 52, 131, 0.2);
+      padding: 40px 20px 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 4px solid #a259c6;
+      position: relative;
+      max-width: 420px;
+      width: 95vw;
+    }
+    .yam-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      background: radial-gradient(circle at 60% 40%, #b57edc 60%, #a259c6 100%);
+      border-radius: 50% 60% 55% 65% / 60% 55% 65% 50%;
+      box-shadow: 0 4px 16px #a259c6aa;
+      position: relative;
+    }
+    .yam-icon::after {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 30px;
+      width: 18px;
+      height: 18px;
+      background: #fff3;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+    h2 {
+      color: #6d3a8c;
+      margin-bottom: 18px;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #a259c655;
+      text-align: center;
+    }
+    .verse-options {
+      width: 100%;
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .verse-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 12px;
+      color: #6d3a8c;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px #a259c622;
+      text-align: left;
+      word-break: break-word;
+      border: 2px solid #a259c6;
+    }
+    .answer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .btn {
+      background: linear-gradient(90deg, #a259c6 60%, #b57edc 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 0;
+      box-shadow: 0 2px 8px #a259c655;
+      transition: background 0.2s, box-shadow 0.2s;
+      width: 120px;
+    }
+    .btn:active {
+      background: #6d3a8c;
+    }
+    .result-message {
+      color: #6d3a8c;
+      font-size: 1.1rem;
+      min-height: 24px;
+      margin-top: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    @media (max-width: 600px) {
+      .yam-container {
+        padding: 18px 2vw 18px 2vw;
+        max-width: 98vw;
+      }
+      .verse-box {
+        font-size: 1rem;
+        padding: 12px 6px;
+      }
+      .btn {
+        width: 100px;
+        font-size: 1rem;
+        padding: 8px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="yam-container">
+    <div class="yam-icon"></div>
+    <h2>不一样的圣经</h2>
+    <div class="verse-options">
+      <div class="verse-box" id="verse1"></div>
+      <div class="verse-box" id="verse2"></div>
+    </div>
+    <div class="answer-section">
+      <button class="btn" id="choose1">选 1</button>
+      <button class="btn" id="choose2">选 2</button>
+      <div class="result-message" id="resultMsg"></div>
+    </div>
+  </div>
+  <script>
+    // Define the verse options and correct answer (1 or 2)
+    const questions = [
+      {
+        verses: [
+          '神造万物，各按其时成为美好',
+          '万事皆有定时，一切在天命之下各就其位。'
+        ],
+        answer: 1
+      },
+      {
+        verses: [
+          '你要勒住舌头，免得舌头害了你全身。',
+          '舌头在百体里也是最小的，却能说大话。'
+        ],
+        answer: 2
+      },
+      {
+        verses: [
+          '智慧之子必安静等待；直到风声止息。',
+          '愚妄人怒气全发；智慧人忍气含怒。'
+        ],
+        answer: 2
+      },
+      {
+        verses: [
+          '你要专心仰赖耶和华， 不可倚靠自己的聪明',
+          '凡事先求明智，再求恩典，因为愚昧人多悔恨。'
+        ],
+        answer: 1
+      },
+      {
+        verses: [
+          '在静默中，人心得以洁净；在等候中，主必施恩。',
+          '主耶和华是我的力量；他使我的脚快如母鹿的蹄'
+        ],
+        answer: 2
+      },
+      {
+        verses: [
+          '心中喜乐，面带笑容；灵里痛苦，骨头枯干。',
+          '喜乐的心乃是良药；忧伤的灵使骨枯干。'
+        ],
+        answer: 2
+      },
+      {
+        verses: [
+          '当用诗章、颂词、灵歌彼此对说，口唱心和地赞美主。',
+          '要用诚实与智慧彼此勉励，以口唱新歌敬拜至高者。'
+        ],
+        answer: 1
+      },
+      {
+        verses: [
+          '因为你们所行的道在我眼前如晨光，照耀直到日午。',
+          '但义人的路好像黎明的光， 越照越明，直到日午。'
+        ],
+        answer: 2
+      },
+      {
+        verses: [
+          '恶人虽无人追赶也逃跑； 义人却胆壮像狮子。',
+          '心中有神的人，不惧风暴，行走如狮，毫不退缩。'
+        ],
+        answer: 1
+      },
+      {
+        verses: [
+          '懒惰人羡慕，却无所得； 殷勤人必得丰裕。',
+          '懒惰使人贫穷，惟有手勤的，日子才昌盛。'
+        ],
+        answer: 1
+      }
+    ];
+
+    let current = 0;
+    const verse1 = document.getElementById('verse1');
+    const verse2 = document.getElementById('verse2');
+    const resultMsg = document.getElementById('resultMsg');
+    const choose1 = document.getElementById('choose1');
+    const choose2 = document.getElementById('choose2');
+
+    function showQuestion(idx) {
+      verse1.textContent = '1. ' + questions[idx].verses[0];
+      verse2.textContent = '2. ' + questions[idx].verses[1];
+      resultMsg.textContent = '';
+      choose1.disabled = false;
+      choose2.disabled = false;
+    }
+
+    function handleAnswer(choice) {
+      if (choose1.disabled || choose2.disabled) return;
+      if (choice === questions[current].answer) {
+        resultMsg.textContent = '答对了！';
+        choose1.disabled = true;
+        choose2.disabled = true;
+        setTimeout(() => {
+          current++;
+          if (current < questions.length) {
+            showQuestion(current);
+          } else {
+            resultMsg.textContent = '全部答对，恭喜通关！';
+            setTimeout(() => {
+              window.location.href = '3shubogu.html';
+            }, 1200);
+          }
+        }, 800);
+      } else {
+        resultMsg.textContent = '答错了，请再试一次。';
+      }
+    }
+
+    choose1.addEventListener('click', () => handleAnswer(1));
+    choose2.addEventListener('click', () => handleAnswer(2));
+
+    showQuestion(current);
+  </script>
+</body>
+</html>

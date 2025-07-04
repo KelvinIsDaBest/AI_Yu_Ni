@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku？EZ la</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #a259c6 0%, #6d3a8c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+
+        .yam-container {
+            background: #e6d0f7;
+            border-radius: 32px;
+            box-shadow: 0 8px 32px rgba(108, 52, 131, 0.2);
+            padding: 32px 10px 24px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 4px solid #a259c6;
+            position: relative;
+            max-width: 480px;
+            width: 98vw;
+        }
+
+        .yam-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            background: radial-gradient(circle at 60% 40%, #b57edc 60%, #a259c6 100%);
+            border-radius: 50% 60% 55% 65% / 60% 55% 65% 50%;
+            box-shadow: 0 4px 16px #a259c6aa;
+            position: relative;
+        }
+
+        .yam-icon::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 30px;
+            width: 18px;
+            height: 18px;
+            background: #fff3;
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        h2 {
+            color: #6d3a8c;
+            margin-bottom: 18px;
+            font-size: 2rem;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px #a259c655;
+            text-align: center;
+        }
+
+        .sudoku-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 2px;
+            background: #a259c6;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 8px #a259c622;
+            width: 360px;
+            max-width: 90vw;
+            aspect-ratio: 1 / 1;
+        }
+
+        .cell {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #fff;
+            color: #6d3a8c;
+            font-size: 1.25rem;
+            text-align: center;
+            border: 1.5px solid #b57edc;
+            border-radius: 4px;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .cell:focus {
+            border: 2px solid #a259c6;
+            box-shadow: 0 0 0 2px #a259c655;
+        }
+
+        .cell[readonly] {
+            background: #e6d0f7;
+            color: #a259c6;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        /* Bold borders for 3x3 boxes */
+        .cell.box-right {
+            border-right: 3px solid #a259c6;
+        }
+
+        .cell.box-bottom {
+            border-bottom: 3px solid #a259c6;
+        }
+
+        .timer {
+            color: #a259c6;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #a259c6 60%, #b57edc 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px #a259c655;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:active {
+            background: #6d3a8c;
+        }
+
+        .error-message {
+            color: #c0392b;
+            font-size: 1rem;
+            min-height: 24px;
+            margin-top: 8px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 1.1rem;
+            margin-top: 8px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            .yam-container {
+                padding: 10px 1vw 10px 1vw;
+                max-width: 99vw;
+            }
+
+            .sudoku-board {
+                width: 98vw;
+                min-width: 0;
+            }
+
+            .cell {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="yam-container">
+        <div class="yam-icon"></div>
+        <h2>Sudoku？EZ la</h2>
+        <div class="timer" id="timer"></div>
+        <form id="sudokuForm" autocomplete="off" onsubmit="return false;">
+            <div class="sudoku-board" id="sudokuBoard"></div>
+            <button class="btn" id="submitBtn" type="submit">提交答案</button>
+            <div class="error-message" id="errorMsg"></div>
+            <div class="success-message" id="successMsg"></div>
+        </form>
+    </div>
+    <script>
+        // --- CONFIGURABLE SUDOKU PUZZLE ---
+        // 0 means empty (answer field), other numbers are fixed clues
+        // You can change this puzzle as needed
+        const puzzle = [
+            [0, 8, 0, 0, 0, 0, 2, 1, 3],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 3, 1, 0, 5, 6, 0],
+            [7, 2, 1, 0, 9, 8, 3, 0, 5],
+            [5, 3, 9, 0, 7, 4, 6, 0, 1],
+            [8, 0, 4, 0, 0, 0, 0, 0, 7],
+            [0, 9, 8, 0, 0, 0, 0, 0, 0],
+            [0, 5, 6, 9, 0, 7, 0, 0, 0],
+            [0, 7, 0, 0, 6, 5, 1, 0, 2]
+        ];
+        // Define the answer for each empty cell (0 in puzzle)
+        // This is the solution for the above puzzle
+        const solution = [
+            [6, 8, 5, 7, 4, 9, 2, 1, 3],
+            [3, 1, 2, 5, 8, 6, 4, 7, 9],
+            [9, 4, 7, 3, 1, 2, 5, 6, 8],
+            [7, 2, 1, 6, 9, 8, 3, 4, 5],
+            [5, 3, 9, 2, 7, 4, 6, 8, 1],
+            [8, 6, 4, 1, 5, 3, 9, 2, 7],
+            [2, 9, 8, 4, 3, 1, 7, 5, 6],
+            [1, 5, 6, 9, 2, 7, 8, 3, 4],
+            [4, 7, 3, 8, 6, 5, 1, 9, 2]
+
+        ];
+        // --- END CONFIGURABLE ---
+
+        const sudokuBoard = document.getElementById('sudokuBoard');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const timer = document.getElementById('timer');
+        const submitBtn = document.getElementById('submitBtn');
+        let timeLeft = 300; // 5 minutes
+        let timerInterval = null;
+        let answered = false;
+
+        // Render Sudoku board
+        function renderBoard() {
+            sudokuBoard.innerHTML = '';
+            for (let row = 0; row < 9; row++) {
+                for (let col = 0; col < 9; col++) {
+                    const val = puzzle[row][col];
+                    const input = document.createElement('input');
+                    input.className = 'cell';
+                    input.maxLength = 1;
+                    input.inputMode = 'numeric';
+                    input.pattern = '[1-9]';
+                    input.autocomplete = 'off';
+                    input.style.caretColor = '#a259c6';
+                    input.dataset.row = row;
+                    input.dataset.col = col;
+                    // Bold borders for 3x3 boxes
+                    if ((col + 1) % 3 === 0 && col !== 8) input.classList.add('box-right');
+                    if ((row + 1) % 3 === 0 && row !== 8) input.classList.add('box-bottom');
+                    if (val !== 0) {
+                        input.value = val;
+                        input.readOnly = true;
+                    } else {
+                        input.value = '';
+                        input.readOnly = false;
+                        input.required = true;
+                        input.addEventListener('input', function () {
+                            this.value = this.value.replace(/[^1-9]/g, '');
+                        });
+                    }
+                    sudokuBoard.appendChild(input);
+                }
+            }
+        }
+
+        function startTimer() {
+            timer.textContent = `剩余时间：${Math.floor(timeLeft / 60)}分${timeLeft % 60}秒`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timer.textContent = `剩余时间：${Math.floor(timeLeft / 60)}分${timeLeft % 60}秒`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timer.textContent = '时间到！';
+                    disableBoard();
+                    errorMsg.textContent = '很遗憾，时间已到。请刷新页面重试。';
+                }
+            }, 1000);
+        }
+
+        function disableBoard() {
+            const cells = sudokuBoard.querySelectorAll('.cell');
+            cells.forEach(cell => cell.disabled = true);
+            submitBtn.disabled = true;
+        }
+
+        document.getElementById('sudokuForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (answered || timeLeft <= 0) return;
+            errorMsg.textContent = '';
+            successMsg.textContent = '';
+            // Validate all answer fields
+            let correct = true;
+            const cells = sudokuBoard.querySelectorAll('.cell');
+            for (let i = 0; i < cells.length; i++) {
+                const cell = cells[i];
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+                if (!cell.readOnly) {
+                    const val = parseInt(cell.value, 10);
+                    if (isNaN(val) || val !== solution[row][col]) {
+                        correct = false;
+                        cell.style.background = '#ffd6e0';
+                    } else {
+                        cell.style.background = '#e6fff2';
+                    }
+                }
+            }
+            if (correct) {
+                answered = true;
+                clearInterval(timerInterval);
+                successMsg.textContent = '恭喜你，全部答对了！';
+                disableBoard();
+                setTimeout(() => {
+                    window.location.href = '4thisqsgotproblem.html';
+                }, 1200);
+            } else {
+                errorMsg.textContent = '有些答案不正确，请检查红色格子。';
+            }
+        });
+
+        renderBoard();
+        startTimer();
+    </script>
+</body>
+
+</html>

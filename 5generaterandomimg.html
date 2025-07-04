@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我是摄影师</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #a259c6 0%, #6d3a8c 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    .yam-container {
+      background: #e6d0f7;
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(108, 52, 131, 0.2);
+      padding: 40px 20px 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 4px solid #a259c6;
+      position: relative;
+      max-width: 420px;
+      width: 95vw;
+    }
+    .yam-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      background: radial-gradient(circle at 60% 40%, #b57edc 60%, #a259c6 100%);
+      border-radius: 50% 60% 55% 65% / 60% 55% 65% 50%;
+      box-shadow: 0 4px 16px #a259c6aa;
+      position: relative;
+    }
+    .yam-icon::after {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 30px;
+      width: 18px;
+      height: 18px;
+      background: #fff3;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+    h2 {
+      color: #6d3a8c;
+      margin-bottom: 18px;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #a259c655;
+      text-align: center;
+    }
+    .sample-img {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 18px;
+      box-shadow: 0 2px 12px #a259c655;
+      margin-bottom: 18px;
+      border: 3px solid #a259c6;
+      background: #fff;
+      object-fit: cover;
+    }
+    .desc-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px 14px;
+      color: #6d3a8c;
+      font-size: 1.15rem;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px #a259c622;
+      min-width: 220px;
+      max-width: 340px;
+      text-align: left;
+      word-break: break-all;
+    }
+    .instruction {
+      color: #6d3a8c;
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 18px;
+      font-weight: bold;
+    }
+    .btn {
+      background: linear-gradient(90deg, #a259c6 60%, #b57edc 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px #a259c655;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn:active {
+      background: #6d3a8c;
+    }
+    @media (max-width: 600px) {
+      .yam-container {
+        padding: 18px 2vw 18px 2vw;
+        max-width: 98vw;
+      }
+      .desc-box {
+        font-size: 1rem;
+        padding: 12px 6px;
+      }
+      .sample-img {
+        max-width: 98vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="yam-container">
+    <div class="yam-icon"></div>
+    <h2>我是摄影师</h2>
+    <img src="aeAtKLCC.png" alt="Sample" class="sample-img" />
+    <div class="desc-box" id="descBox"></div>
+    <div class="instruction">请根据以上要求，用ChatGPT生成一张图片。<br/>图搞定了就举手哈。</div>
+    <button class="btn" id="nextBtn">下一关</button>
+  </div>
+  <script>
+    // Define multiple characters and places
+    const characters = [
+      '爱因斯坦',
+      '爱迪生',
+      '约翰',
+      '牛顿',
+      '孔子'
+    ];
+    const places = [
+      '吉隆坡双子塔前',
+      '吉隆坡武吉免登（Bukit Bintang)',
+      '马来西亚黑风洞',
+      '金马伦高原',
+      '吉隆坡独立广场'
+    ];
+    // Pick one character and one place randomly
+    const character = characters[Math.floor(Math.random() * characters.length)];
+    const place = places[Math.floor(Math.random() * places.length)];
+    // Show description
+    const descBox = document.getElementById('descBox');
+    descBox.innerHTML = `<strong>角色:</strong> ${character}<br><strong>地点:</strong> ${place}`;
+
+    // Button navigation
+    document.getElementById('nextBtn').onclick = function() {
+      window.location.href = '6secretcode1.html';
+    };
+  </script>
+</body>
+</html>

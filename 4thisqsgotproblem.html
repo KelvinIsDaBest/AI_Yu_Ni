@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>对不对哦</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #a259c6 0%, #6d3a8c 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+    .yam-container {
+      background: #e6d0f7;
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(108, 52, 131, 0.2);
+      padding: 40px 20px 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 4px solid #a259c6;
+      position: relative;
+      max-width: 420px;
+      width: 95vw;
+    }
+    .yam-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      background: radial-gradient(circle at 60% 40%, #b57edc 60%, #a259c6 100%);
+      border-radius: 50% 60% 55% 65% / 60% 55% 65% 50%;
+      box-shadow: 0 4px 16px #a259c6aa;
+      position: relative;
+    }
+    .yam-icon::after {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 30px;
+      width: 18px;
+      height: 18px;
+      background: #fff3;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+    h2 {
+      color: #6d3a8c;
+      margin-bottom: 18px;
+      font-size: 2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 8px #a259c655;
+      text-align: center;
+    }
+    .instructions {
+      color: #6d3a8c;
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 14px;
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px #a259c622;
+      text-align: left;
+      max-width: 340px;
+      width: 100%;
+    }
+    .questions-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+    .question-block {
+      background: #fff;
+      border-radius: 16px;
+      padding: 14px 12px 10px 12px;
+      color: #6d3a8c;
+      font-size: 1.08rem;
+      box-shadow: 0 2px 8px #a259c622;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .question-label {
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .answer-input {
+      width: 70px;
+      height: 40px;
+      font-size: 1.2rem;
+      text-align: center;
+      border: 2px solid #a259c6;
+      border-radius: 10px;
+      background: #fff;
+      color: #6d3a8c;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px #a259c622;
+      margin-top: 2px;
+    }
+    .answer-input:focus {
+      border: 2px solid #6d3a8c;
+      box-shadow: 0 0 0 2px #a259c655;
+    }
+    .btn {
+      background: linear-gradient(90deg, #a259c6 60%, #b57edc 100%);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px #a259c655;
+      transition: background 0.2s, box-shadow 0.2s;
+      align-self: center;
+    }
+    .btn:active {
+      background: #6d3a8c;
+    }
+    .error-message {
+      color: #c0392b;
+      font-size: 1rem;
+      min-height: 24px;
+      margin-top: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .success-message {
+      color: #27ae60;
+      font-size: 1.1rem;
+      margin-top: 8px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    @media (max-width: 600px) {
+      .yam-container {
+        padding: 18px 2vw 18px 2vw;
+        max-width: 98vw;
+      }
+      .instructions {
+        font-size: 1rem;
+        padding: 12px 6px;
+      }
+      .question-block {
+        font-size: 1rem;
+        padding: 10px 6px 8px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="yam-container">
+    <div class="yam-icon"></div>
+    <h2>对不对哦</h2>
+    <div class="instructions">
+      本关卡共有 6 个句子，每个句子都包含一些语法或用词错误。<br>
+      你的任务是：<b>判断每个句子里有多少个错误</b>，并在下方输入框填写数字。<br>
+      <b>注意：</b>所有题目都要答对才能过关，如果有一题错了需要全部重答，题目顺序会随机！<br>
+      只接受整数答案。
+    </div>
+    <form id="questionsForm" class="questions-form" autocomplete="off" onsubmit="return false;">
+      <!-- Questions will be injected here -->
+      <button class="btn" id="submitBtn" type="submit">提交答案</button>
+      <div class="error-message" id="errorMsg"></div>
+      <div class="success-message" id="successMsg"></div>
+    </form>
+  </div>
+  <script>
+    // 你可以在这里自定义题目和答案
+    const questionsData = [
+      { sentence: '摩西在约旦河上行走，并用鱼喂饱五千人。他之后又和保罗一起进了方舟。', answer: 3 },
+      { sentence: '亚伯拉罕带着石头打败了歌利亚，并被神立为以色列第一位王。他的好朋友是但以理，两人一起经历了火窑奇迹。', answer: 3 },
+      { sentence: '主耶稣一生的重要事件：他在巴别塔上讲登山宝训，之后骑着鲸鱼渡过尼罗河，把彼得从狮子坑中救出来，感动了整座亚述城悔改。', answer: 4 },
+      { sentence: '大卫在旷野遇到撒该，两人一起喂养了玛拿西的鸽子，还一同上了西奈山接受十诫。', answer: 4 },
+      { sentence: '以斯帖是耶稣的门徒之一，她曾在耶路撒冷的监狱里为保罗祷告，还写了提摩太后书的最后一章，表达她对迦南地的盼望。', answer: 4 },
+      { sentence: '挪亚造方舟、约翰写启示录、耶稣用斧头砍下无花果树、彼得带着天使摧毁所多玛。', answer: 2 }
+    ];
+
+    // Fisher-Yates shuffle
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    let questions = shuffle([...questionsData]);
+    const form = document.getElementById('questionsForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+
+    function renderQuestions() {
+      // Remove old question blocks if any
+      const oldBlocks = form.querySelectorAll('.question-block');
+      oldBlocks.forEach(b => b.remove());
+      // Insert new shuffled questions
+      questions.forEach((q, idx) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        block.innerHTML = `
+          <div class="question-label">题目 ${idx + 1}：</div>
+          <div class="question-sentence">${q.sentence}</div>
+          <input class="answer-input" type="number" min="0" inputmode="numeric" required autocomplete="off" />
+        `;
+        form.insertBefore(block, submitBtn);
+      });
+    }
+
+    renderQuestions();
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errorMsg.textContent = '';
+      successMsg.textContent = '';
+      const inputs = form.querySelectorAll('.answer-input');
+      let allCorrect = true;
+      let hasEmpty = false;
+      inputs.forEach((input, idx) => {
+        const val = input.value.trim();
+        if (val === '') {
+          hasEmpty = true;
+        } else if (parseInt(val, 10) !== questions[idx].answer) {
+          allCorrect = false;
+        }
+      });
+      if (hasEmpty) {
+        errorMsg.textContent = '请填写所有题目的答案。';
+        return;
+      }
+      if (allCorrect) {
+        successMsg.textContent = '全部答对，恭喜通关！';
+        setTimeout(() => {
+          window.location.href = '5generaterandomimg.html';
+        }, 1200);
+      } else {
+        errorMsg.textContent = '有题目答错了，需要全部重答，题目顺序已重新洗牌。';
+        // Shuffle and re-render
+        questions = shuffle([...questionsData]);
+        renderQuestions();
+      }
+    });
+  </script>
+</body>
+</html>
